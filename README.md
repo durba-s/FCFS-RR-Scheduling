@@ -64,7 +64,7 @@ Meanwhile the monitor thread of each process polls this shared memory segment at
 
 Additionally, to guarantee mutual exclusion assuming a uniprocessor environment, the CPU is treated as a resource and there is a *cpu_lock* semaphore which has to be acquired and released by the worker thread after the *turn_lock* has been signalled. C<sub>1</sub>, C<sub>2</sub> and C<sub>3</sub> each have their own *turn_lock*, while the same *cpu_lock* is used by all three of them.
 
-When the worker thread has finished its task, the process writes to shared memory that it is done (the scheduler M will not schedule this process anymore) and returns the result (via a pipe). M writes the next process to shared memory and the process continues till all processes have completed their tasks.
+When the worker thread has finished its task, the process writes to another shared memory segment (between each child process and parent process) that it is done (the scheduler M will not schedule this process anymore) and returns the result (via a pipe). M writes the next process to shared memory and the process continues till all processes have completed their tasks.
 In the case of RR, if a full time quantum elapses and the process has not yet finished executing i.e. the shared memory value for currently scheduled process changes, the monitor thread which is polling this value decrements the value of the *turn_lock*. As a result, the worker thread is made to once again busy wait on the *turn_lock*, pausing execution.
 
 
